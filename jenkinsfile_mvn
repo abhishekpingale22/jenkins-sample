@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven-Default'
+    }
+    parameters {
+        string(name: 'myParameter', defaultValue: 'myVal', description: 'Enter Parameter value?')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+                dir("${env.WORKSPACE}/java-tomcat-sample"){
+                    sh "pwd"
+                    sh 'mvn clean install'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+                echo "${params.myParameter} is value retrieved!"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/*.war', fingerprint: true
+        }
+    }
+}
