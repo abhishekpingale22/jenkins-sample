@@ -6,14 +6,15 @@
       - [Plugin installation](#plugin-installation)
       - [Jenkins Job to deploy war file](#jenkins-job-to-deploy-war-file)
       - [Artifacts Archive](#artifacts-archive)
-    - [Jenkins Environment Variables:](#jenkins-environment-variables)
-      - [Jenkins Github Webhook - Check](#jenkins-github-webhook---check)
-    - [Managing access control and authorization](#managing-access-control-and-authorization)
+  - [Jenkins Environment Variables:](#jenkins-environment-variables)
+  - [Jenkins Github Webhook - Check](#jenkins-github-webhook---check)
+  - [Managing access control and authorization](#managing-access-control-and-authorization)
     - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
     - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
-  - [- Click on **Build Now** to build the jenkinsfile project](#ulliclick-on-build-now-to-build-the-jenkinsfile-projectliul)
+      - [Configuring Credentials in Jenkinsfile](#configuring-credentials-in-jenkinsfile)
+        - [Notes](#notes)
 
 ## Pre-requisites
 - Below steps assume that, you have a Jenkins Server Up and Running on one of the EC2 instance.
@@ -137,12 +138,12 @@ ls /var/lib/jenkins/workspace/<JOB_NAME>
 
 - Once build is successfull , lets add webhook to the github project.
 
-### Jenkins Environment Variables:
+## Jenkins Environment Variables:
 - To view all the environment variables simply append `env-vars.html` to your Jenkins Server's URL.
 
 - Create a simple free style job to display the value of the environment variables that are set for a Jenkins Job:
 - Under Build Section > Add build step > Execute shell , add below commands:
-```
+```bash
 echo "BUILD_NUMBER" :: $BUILD_NUMBER
 echo "BUILD_ID" :: $BUILD_ID
 echo "BUILD_DISPLAY_NAME" :: $BUILD_DISPLAY_NAME
@@ -159,7 +160,7 @@ echo "BUILD_URL" ::$BUILD_URL
 echo "JOB_URL" :: $JOB_URL
 ```
 
-#### Jenkins Github Webhook - Check
+## Jenkins Github Webhook - Check
 - Integrate jenkins with github so automatically CICD works when any commit is made to the repo
 Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` > Enter URL : `http://public-ip:8080/github-webhook/`
 
@@ -174,7 +175,7 @@ Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` 
 - Lets configure some users in Jenkins, create a read only user :
 `Select Manage Jenkins` > `Manage Users` > `Create a user`
 
-### Managing access control and authorization
+## Managing access control and authorization
 Managing access control and authorization
 - Go to `Manage Jenkins` > `Configure Global Security` > `Enable security`.
 
@@ -207,10 +208,10 @@ Try to access the Jenkins dashboard with a newly added user who has no rights, a
 ```
 ls -ltr /var/log/jenkins/
 ```
----
+
 ### Jenkins Build with Jenkinsfile
 - Navigate to Provide a name for your new item and select Pipeline
-- Jenkinsfile
+- **Jenkinsfile**
 ```
 pipeline {
     agent any
@@ -238,8 +239,8 @@ pipeline {
     }
 }
 ```
-- Add below content as Jenkinsfile and push in Github.
 
+- Add below content as Jenkinsfile and push in Github.
 
 - Click the Add Source button, select git choose the type of repository you want to use and fill in the details.
 
@@ -274,7 +275,19 @@ sudo systemctl restart jenkins
 
 ```
 - Click on **Build Now** to build the jenkinsfile project
------------------------
+
+#### Configuring Credentials in Jenkinsfile
+- Navigate to Jenkins Home page > Credentials > System > Add Credentials.
+- Select Scope as 'Global'
+    **Global** - When credentials are to be added for a Pipeline project/item.
+    **System** - When credentials are to be added for a Jenkins itself to interact with system administration functions., such as email authentication, agent connection, etc. This option applies the scope of the credential to a single object only.
+
+Types of credentials:
+**Secret text** - a token such as an API token (e.g. a GitHub personal access token)
+**Username and password** - which could be a colon separated string in the format username:password
+
 > Audit Trail Plugin keeps a log of users who performed particular Jenkins operations, such as configuring jobs.
 This plugin adds an Audit Trail section in the main Jenkins configuration page.
 Here you can configure log location and settings (file size and number of rotating log files), and a URI pattern for requests to be logged. The default options select most actions with significant effect such as creating/configuring/deleting jobs and views or delete/save-forever/start a build. The log is written to disk as configured and recent entries can also be viewed in the Manage / System Log section.
+
+##### Notes

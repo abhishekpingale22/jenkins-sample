@@ -1,7 +1,6 @@
-# Jenkins - Table of Contents
-- [Jenkins - Table of Contents](#jenkins---table-of-contents)
-    - [Jenkins CICD - Steps](#jenkins-cicd---steps)
-  - [- Current home directory for jenkins is (/var/lib/jenkins)](#ullicurrent-home-directory-for-jenkins-is-varlibjenkinsliul)
+# Jenkins-Table of Contents
+- [Jenkins-Table of Contents](#jenkins-table-of-contents)
+    - [Jenkins CICD-Steps](#jenkins-cicd-steps)
     - [Setup JDK for Jenkins](#setup-jdk-for-jenkins)
     - [Installing the Git plugin](#installing-the-git-plugin)
     - [Setup maven](#setup-maven)
@@ -32,7 +31,7 @@
     - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage-1)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile-1)
   - [- Click on **Build Now** to build the jenkinsfile project](#ulliclick-on-build-now-to-build-the-jenkinsfile-projectliul-1)
-### Jenkins CICD - Steps
+### Jenkins CICD-Steps
 - Jenkins Installation
 - Launch an EC2 instance with Amazon Linux 2
 - Jenkins requires Java. To install Java, execute:
@@ -94,7 +93,6 @@ sudo usermod -a -G wheel jenkins
 id jenkins
 ```
 - Current home directory for jenkins is (/var/lib/jenkins)
----
 ### Setup JDK for Jenkins
 - Install OpenJDK 8 JDK
 - To install OpenJDK 8 JDK using yum, run this command:
@@ -114,12 +112,14 @@ Go to Jenkins Dashboard -> Manage Jenkins -> Global Tool Configuration > JDK > G
 sudo yum install git -y
 git --version
 ```
+- This will return the version of the Git client that you installed.
+- Go to `Manage Jenkins > Manage Plugins > Available Tab > Filter "Git Plugin" `
+This will prompt Jenkins to download the plugin, install it, and restart Jenkins to make it available for use.
 
 
 ### Setup maven
 - Go to `Jenkins Dashboard` -> `Manage Jenkins` -> `Global Tool Configuration` > `Maven` > Give a Name `Maven_Local` > Check `Install Automatically` > Install from Apache (specify a version) > `Save`
 - You can give a logical name to identify the correct version while configuring a build job:
-
 
 ### Create a Jenkins Freestyle Project
 - Click on **New Item** then enter an item name, select **Freestyle project**.

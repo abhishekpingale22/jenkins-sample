@@ -5,15 +5,15 @@
     - [Installing the Git plugin](#installing-the-git-plugin)
     - [Setup maven](#setup-maven)
     - [Create a Jenkins Freestyle Project](#create-a-jenkins-freestyle-project)
+      - [Build with Parameters](#build-with-parameters)
     - [Jenkins Github Webhook](#jenkins-github-webhook)
     - [Jenkins Maven Build Project](#jenkins-maven-build-project)
+    - [Maven build phases](#maven-build-phases)
     - [Managing access control and authorization](#managing-access-control-and-authorization)
     - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
     - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
-    - [Maven build phases](#maven-build-phases)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
-    - [Archiving artifacts](#archiving-artifacts)
   - [Continuous Delivery](#continuous-delivery)
 
 
@@ -30,13 +30,13 @@ sudo service jenkins start
 ```
 This package installation will:
 - Setup Jenkins as a daemon launched on start. See `/etc/init.d/jenkins` for more details.
-- Create a ‘jenkins’ user to run this service.
-- Direct console log output to the file /var/log/jenkins/jenkins.log. Check this file if you are troubleshooting Jenkins.
+- Create a `jenkins` user to run this service.
+- Direct console log output to the file `/var/log/jenkins/jenkins.log`.
+- Check this file if you are troubleshooting Jenkins.
 - Populate /etc/default/jenkins with configuration parameters for the launch, e.g JENKINS_HOME
 - Set Jenkins to listen on port 8080. Access this port with your browser to start configuration.
 
-
--Login to EC2 Jenkins Server using ssh.
+- Login to EC2 Jenkins Server using ssh.
 ```
 netstat -nltp
 sudo service jenkins status
@@ -44,16 +44,11 @@ sudo service jenkins stop
 sudo service jenkins restart
 ```
 
-- Below file is contains port information for jenkins service
+- Check Jenkins Port Information
 ```
 sudo cat /etc/sysconfig/jenkins | grep -i port
-```
-
-- Check Jenkins Linux Process:
-```
 ps -elf | grep 8080
 ```
-
 - Lets look at the jenkins log file
 ```
 sudo cat /var/log/jenkins/jenkins.log
@@ -68,18 +63,18 @@ http://public-ip:8080
 ```
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
-- As of now select Install Suggested Plugins only
+- Select `Install Suggested Plugins` only
 
 - It will ask for creating for first admin user, enter details as required.
 
-- To add jenkins user in linux to sudoers group
-
+- A linux user with name `jenkins` is created while Jenkins Installation, add `jenkins` user in linux to `sudoers` group
 ```
+cat /etc/passwd | grep -i 'jenkins'
 sudo usermod -a -G wheel jenkins
 id jenkins
 ```
-- Current home directory for jenkins is (/var/lib/jenkins)
-
+- Current home directory for jenkins is **/var/lib/jenkins**
+- To view the Jenkins Systems Information, navigate to `Manage Jenkins` > `System Information`
 ### Setup JDK for Jenkins
 - Install OpenJDK 8 JDK
 - To install OpenJDK 8 JDK using yum, run this command:
@@ -91,7 +86,7 @@ sudo yum install java-1.8.0-openjdk-devel
 sudo find / -name "*jdk1*"
 ```
 Provide the path under provide the path under :
-Go to Jenkins Dashboard -> Manage Jenkins -> Global Tool Configuration > JDK > Give a Name > Give appropriate path to JDK e.g `/usr/lib/jvm/java-1.8.0-openjdk`
+Go to `Jenkins Dashboard -> Manage Jenkins -> Global Tool Configuration > JDK` > Give a Name > Give appropriate path to JDK e.g `/usr/lib/jvm/java-1.8.0-openjdk`
 
 ### Installing the Git plugin
 - We need to install the Git client on to our Jenkins server
@@ -109,9 +104,18 @@ git --version
 
 ### Create a Jenkins Freestyle Project
 - Click on **New Item** then enter an item name, select **Freestyle project**.
+- Enter some build commands i.e bash commands `printenv` to be executed in the freestyle project.
+
+#### Build with Parameters
+- Sometimes, it is useful/necessary to have your builds take several "parameters."
+- This can to run a Pipeline Job as per SDLC Environment or any other value to be passed on Job Runtime.
+- Under a specific jenkins project, select `Configure` option, select the checkbox `This project is parameterized` and `Add Parameter`
+- For testing the value of the runtime parameter, keep `Source Code Management` as `None`
+- The parameters are available as environment variables. So a shell $PARAM_VAR,can be used to access these values.
+
 - Select the GitHub project checkbox and set the Project URL to point to your GitHub Repository. `https://github.com/YourUserName/`
 
-- Under Source Code Management Section : Provide the Github Repository URL of the Maven Project, keep the branch as master.
+- Under Source Code Management Section: Provide the Github Repository URL of the Maven Project, keep the branch as master.
 
 - Go to Jenkins Project -> Configure -> Under Build Environment Build Step > Select "Invoke top-level Maven targets" from dropdown > select the Maven Version that we just created.
 
@@ -157,6 +161,16 @@ https://github.com/YourUserName/repo-name.git
 
 Download the required Git version based on the operating system, or install automatically.
 
+### Maven build phases
+
+> **Validate** : Validate Project is correct & all necessary information is available.
+**Compile** : Compile the Source Code
+**Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
+**package** : Take the compiled code and package it.
+**Install** : Install package in Local Repo, for use as a dependency in other project locally.
+**Deploy** : Copy the final package to the remote repository for sharing with other developers.
+
+- The above are always are sequential, if you specify "install", all the phases before "install" are checked.
 ### Managing access control and authorization
 Managing access control and authorization
 - Go to Manage Jenkins > Configure Global Security > Enable security.
@@ -173,7 +187,7 @@ Credentials, Slave, Job, and so on.
 2. Click on Save.
 
 - Lets configure some users in Jenkins, create a read only user
-Select Manage Jenkins > Manage Users > Create a user
+`Select Manage Jenkins > Manage Users > Create a user`
 
 - Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
 
@@ -192,18 +206,7 @@ Select Manage Jenkins > Manage Users > Create a user
 ls -ltr /var/log/jenkins/
 ```
 
-### Maven build phases
 
-> **Validate** : Validate Project is correct & all necessary information is available.
-**Compile** : Compile the Source Code
-**Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
-**package** : Take the compiled code and package it.
-**Install** : Install package in Local Repo, for use as a dependency in other project locally.
-**Deploy** : Copy the final package to the remote repository for sharing with other developers.
-
-- The above are always are sequential, if you specify "install", all the phases before "install" are checked. 
-
----
 ### Jenkins Build with Jenkinsfile
 - Add below content as Jenkinsfile and push in Github.
 
@@ -246,12 +249,6 @@ sudo systemctl restart jenkins
 > Audit Trail Plugin keeps a log of users who performed particular Jenkins operations, such as configuring jobs.
 This plugin adds an Audit Trail section in the main Jenkins configuration page.
 Here you can configure log location and settings (file size and number of rotating log files), and a URI pattern for requests to be logged. The default options select most actions with significant effect such as creating/configuring/deleting jobs and views or delete/save-forever/start a build. The log is written to disk as configured and recent entries can also be viewed in the Manage / System Log section.
-
-### Archiving artifacts
-1. Go to Jenkins dashboard -> Jenkins project or build job -> Post-build Actions -> Add post-build action -> Archive the artifacts:
-
-You can use wildcards, such as module/dist/**/*.zip. The artifact archiver uses Ant
-org.apache.tools.ant.DirectoryScanner, which excludes the following patterns by default: **/%*%,**/.git/**,**/SCCS,**/.bzr,**/.hg/**,**/.bzrignore,**/.git,**/SCCS/**,**/.hg,**/.#s
 
 ## Continuous Delivery
 > Continuous Delivery (CD) is a DevOps practice that is used to deploy an application quickly while maintaining a high quality with an automated approach. It is about the way application package is deployed in the Web Server or in the Application Server in environment such as dev, test or staging. Deployment of an application can be done using shell script, batch file, or plugins available in Jenkins. Approach of automated deployment in case of Continuous Delivery and Continuous Deployment will be always same most of the time. In the case of Continuous Delivery, the application package is always production ready

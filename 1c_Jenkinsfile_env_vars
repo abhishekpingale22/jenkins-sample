@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    environment {
+        TEST_ENV = 'dev'
+    }
+    stages {
+        stage('Build') {
+            environment {
+                DEBUG_FLAGS = '-g'
+            }
+            steps {
+                sh 'printenv'
+                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+            }
+        }
+        stage('CheckEnv') {
+            steps {
+                sh 'echo $TEST_ENV'
+            }
+        }
+    }
+}
