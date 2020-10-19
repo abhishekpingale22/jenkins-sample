@@ -6,13 +6,16 @@
     - [Setup maven](#setup-maven)
     - [Create a Jenkins Freestyle Project](#create-a-jenkins-freestyle-project)
       - [Build with Parameters](#build-with-parameters)
-    - [Jenkins Github Webhook](#jenkins-github-webhook)
+      - [Integrate Jenkins with Github Repo](#integrate-jenkins-with-github-repo)
+        - [Generate SSH keys and add to Github:](#generate-ssh-keys-and-add-to-github)
+      - [Jenkins jobs and workpace information](#jenkins-jobs-and-workpace-information)
     - [Jenkins Maven Build Project](#jenkins-maven-build-project)
     - [Maven build phases](#maven-build-phases)
     - [Managing access control and authorization](#managing-access-control-and-authorization)
+    - [Jenkins Github Webhook](#jenkins-github-webhook)
     - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
-    - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
+    - [Audit Trail Plugin](#audit-trail-plugin)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
   - [Continuous Delivery](#continuous-delivery)
 
@@ -27,13 +30,14 @@ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
 sudo yum install java-1.8.0 -y
 sudo yum install jenkins -y
 sudo service jenkins start
+sudo systemctl enable jenkins
 ```
 This package installation will:
 - Setup Jenkins as a daemon launched on start. See `/etc/init.d/jenkins` for more details.
 - Create a `jenkins` user to run this service.
 - Direct console log output to the file `/var/log/jenkins/jenkins.log`.
 - Check this file if you are troubleshooting Jenkins.
-- Populate /etc/default/jenkins with configuration parameters for the launch, e.g JENKINS_HOME
+- Populate `/etc/default/jenkins` with configuration parameters for the launch, e.g JENKINS_HOME
 - Set Jenkins to listen on port 8080. Access this port with your browser to start configuration.
 
 - Login to EC2 Jenkins Server using ssh.
@@ -83,7 +87,7 @@ sudo yum install java-1.8.0-openjdk-devel
 ```
 - Use below find command to search for files with name "jdk"
 ```
-sudo find / -name "*jdk1*"
+sudo find / -name "*jdk*"
 ```
 Provide the path under provide the path under :
 Go to `Jenkins Dashboard -> Manage Jenkins -> Global Tool Configuration > JDK` > Give a Name > Give appropriate path to JDK e.g `/usr/lib/jvm/java-1.8.0-openjdk`
@@ -111,8 +115,9 @@ git --version
 - This can to run a Pipeline Job as per SDLC Environment or any other value to be passed on Job Runtime.
 - Under a specific jenkins project, select `Configure` option, select the checkbox `This project is parameterized` and `Add Parameter`
 - For testing the value of the runtime parameter, keep `Source Code Management` as `None`
-- The parameters are available as environment variables. So a shell $PARAM_VAR,can be used to access these values.
+- The parameters are available as `environment variables`. So a shell $PARAM_VAR,can be used to access these values.
 
+#### Integrate Jenkins with Github Repo
 - Select the GitHub project checkbox and set the Project URL to point to your GitHub Repository. `https://github.com/YourUserName/`
 
 - Under Source Code Management Section: Provide the Github Repository URL of the Maven Project, keep the branch as master.
@@ -122,30 +127,38 @@ git --version
 - Click on Build and select Invoke top-level Maven targets > select the Maven Version that you just created
 #Enter `clean install` > Save
 
-- Click on Build Now to Build this Project
-
-- We will configure Build Triggers after manual build
-
 - Click on **Build Now** to Build this Project
 
-- Once build is successful, lets add webhook to the github project
+##### Generate SSH keys and add to Github:
+- Generate ssh keys and add to `Github Account` **OR** `Specific Github Repo`
+```
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+- To configure ssh keys for Github Account follow below steps:
+  - This creates a new ssh key, using the provided email as a label.
+  - Add the public ssh key to github account under `Settings > SSH and GPG Keys > New SSH key > Add SSH Key` , confirm your password.
 
-### Jenkins Github Webhook
-- Integrate jenkins with github so automatically CICD works when any commit is made to the repo
-Go to Jenkins > Manage Jenkins > Add a Github Server
-Enter URL : http://public-ip:8080/github-webhook/
+- To configure ssh keys for private Github repository follow below steps:
+  - Go to your private Github repo -> Settings -> Deploy keys.
+  - This creates a new ssh key, using the provided email as a label.
+  - Add your ssh key inside the key text input folder, if you want write access to the repo click on the Allow write access.
 
-- Lets add a webhook in Github to point to Jenkins URL
-- In `Github Repository > Go to Repository > Settings > Go to webhook and addnew webhook > Specify http://35.153.194.83/github-webhook/`
-- Go to Jenkins Project, Select the “Build when a change is pushed to GitHub” checkbox under Build Triggers tab > `Save`
+- Jenkins configuration to access private repo:
+  - Navigate to `Jenkins dashboard -> Credentials -> System -> Global credentials -> Add credentials.`
+  - Give username as Jenkins or any value, Add the Private key -> Enter directly and copy paste the same ssh keys here.
+- While setting up a Job in Jenkins, add the credentials created above to the credentials section in `Source Code Management` under the Repository URL.
 
-- For Webhook to work, open port 8080 in security group.
+#### Jenkins jobs and workpace information
+The Jenkins home directory structure
+Colons can be used to align columns.
 
-- Now if we make some changes to some file in Github, this Jenkins Project should be triggered.
+| Directory     | Description
+| ------------- |:-------------:
+| jobs          | It contains configuration details about the build jobs that Jenkins manages, as well as the artifacts and data resulting from these builds.
+| workspace     | It is where Jenkins builds your project: it contains the source code Jenkins checks out, plus any files generated by the build itself.This workspace is reused for each successive build, there is only ever one workspace directory per project, and the disk space it requires tends to be relatively stable.
 
 ### Jenkins Maven Build Project
-- To Create a new task for Jenkins, click on “New Item” then enter an item name that is suitable for your project and select Freestyle project. Now click Ok.
-
+- To Create a new task for Jenkins, click on `New Item` then enter an item name that is suitable for your project and select Freestyle project. Now click Ok.
 - Select the GitHub project checkbox and set the Project URL to point to your GitHub Repository.
 https://github.com/YourUserName/
 
@@ -162,7 +175,7 @@ https://github.com/YourUserName/repo-name.git
 Download the required Git version based on the operating system, or install automatically.
 
 ### Maven build phases
-
+pom.xml file in your project directory
 > **Validate** : Validate Project is correct & all necessary information is available.
 **Compile** : Compile the Source Code
 **Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
@@ -178,13 +191,25 @@ Managing access control and authorization
 - On the Jenkins dashboard, click on Manage Jenkins. Click on Manage Users.
 - We can edit user details on the same page. This is a subset of users, which also contains auto-created users.
 
+### Jenkins Github Webhook
+- Integrate jenkins with github so automatically CICD works when any commit is made to the repo
+Go to Jenkins > Manage Jenkins > Add a Github Server
+Enter URL : http://public-ip:8080/github-webhook/
+
+- Lets add a webhook in Github to point to Jenkins URL
+- In `Github Repository > Go to Repository > Settings > Go to webhook and addnew webhook > Specify http://35.153.194.83/github-webhook/`
+- Go to Jenkins Project, Select the “Build when a change is pushed to GitHub” checkbox under Build Triggers tab > `Save`
+
+- For Webhook to work, open port 8080 in security group.
+
+- Now if we make some changes to some file in Github, this Jenkins Project should be triggered.
+
 ### Maintaining roles and project-based security
 
-For authorization, we can define Matrix-based security on the Configure Global
-Security page.
-1. Add group or user and configure security based on different sections such as
-Credentials, Slave, Job, and so on.
-2. Click on Save.
+For authorization, we can define `Matrix-based` security on the `Configure Global
+Security` page.
+- Add group or user and configure security based on different sections such as
+Credentials, Slave, Job, and so on > Click on Save.
 
 - Lets configure some users in Jenkins, create a read only user
 `Select Manage Jenkins > Manage Users > Create a user`
@@ -192,12 +217,13 @@ Credentials, Slave, Job, and so on.
 - Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
 
 ### Role-Based-Authorization Strategy
-- Add plugin from available tab in Plugins Manager
-- Select the Role Based Strategy
+- Add plugin from available tab in Plugins Manager.
+- Select the `Role Based Strategy`
 - Manage Jenkins > Manage and Assign Roles > Assign read only roles to a user in jenkins
 - create a role with "manage Role" , select Read Permissions
-- Assign a role to another user
-### Audit Trail Plugin – an overview and usage
+- Assign a role to another user.
+
+### Audit Trail Plugin
 - Manage Jenkins > Manage Plugins > Install the `Audit Trail` Plugin.
 - Go to Manage Jenkins > Configure Systems > Audit Trail > Add Logger > Select Log 
 - Provide the Log Location as `/var/log/jenkins/audit-%g.log`, provide Log File Size as `50` and Log File Count `10`.
@@ -205,7 +231,6 @@ Credentials, Slave, Job, and so on.
 ```
 ls -ltr /var/log/jenkins/
 ```
-
 
 ### Jenkins Build with Jenkinsfile
 - Add below content as Jenkinsfile and push in Github.

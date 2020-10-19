@@ -88,15 +88,10 @@ netstat -nltp | grep 8080
 
 - Maven build phases
     **Validate** : Validate Project is correct & all necessary information is available.
-
     **Compile** : Compile the Source Code
-
     **Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
-
     **package** : Take the compiled code and package it.
-
     **Install** : Install package in Local Repo, for use as a dependency in other project locally.
-
     **Deploy** : Copy the final package to the remote repository for sharing with other developers.
 
 - The above are always are sequential, if you specify "install", all the phases before "install" are checked.
@@ -163,15 +158,11 @@ echo "JOB_URL" :: $JOB_URL
 ## Jenkins Github Webhook - Check
 - Integrate jenkins with github so automatically CICD works when any commit is made to the repo
 Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` > Enter URL : `http://public-ip:8080/github-webhook/`
-
 - Lets add a webhook in Github to point to Jenkins URL
 - In `Github Repository > Go to Repository > Settings > Go to webhook and addnew webhook > Specify http://public-ip:8080/github-webhook/`
 - Go to Jenkins Project, Select the “Build when a change is pushed to GitHub” checkbox under Build Triggers tab > `Save`
-
 - For Webhook to work, open port 8080 in security group.
-
 - Now if we make some changes to some file in Github, this Jenkins Project should be triggered.
-
 - Lets configure some users in Jenkins, create a read only user :
 `Select Manage Jenkins` > `Manage Users` > `Create a user`
 
@@ -183,7 +174,6 @@ Managing access control and authorization
 - We can edit user details on the same page. This is a subset of users, which also contains auto-created users.
 
 ### Maintaining roles and project-based security
-
 For authorization, we can define Matrix-based security on the Configure Global Security page.
 1. Add group or user and configure security based on different sections such as Credentials, Slave, Job, and so on.
 2. Click on Save.
