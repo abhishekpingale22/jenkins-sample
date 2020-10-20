@@ -17,8 +17,6 @@
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
     - [Audit Trail Plugin](#audit-trail-plugin)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
-  - [Continuous Delivery](#continuous-delivery)
-
 
 ### Jenkins Installation
 - Launch an EC2 instance with Amazon Linux 2 with below userdata
@@ -39,7 +37,6 @@ This package installation will:
 - Check this file if you are troubleshooting Jenkins.
 - Populate `/etc/default/jenkins` with configuration parameters for the launch, e.g JENKINS_HOME
 - Set Jenkins to listen on port 8080. Access this port with your browser to start configuration.
-
 - Login to EC2 Jenkins Server using ssh.
 ```
 netstat -nltp
@@ -57,12 +54,10 @@ ps -elf | grep 8080
 ```
 sudo cat /var/log/jenkins/jenkins.log
 ```
-
 - Access the Jenkins UI
 ```
 http://public-ip:8080
 ```
-
 - Admin Password is written to a file
 ```
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
@@ -267,13 +262,9 @@ sudo usermod -aG docker jenkins
 
 #Restart jenkins
 sudo systemctl restart jenkins
-
 ```
 - Click on **Build Now** to build the jenkinsfile project
 
 > Audit Trail Plugin keeps a log of users who performed particular Jenkins operations, such as configuring jobs.
 This plugin adds an Audit Trail section in the main Jenkins configuration page.
 Here you can configure log location and settings (file size and number of rotating log files), and a URI pattern for requests to be logged. The default options select most actions with significant effect such as creating/configuring/deleting jobs and views or delete/save-forever/start a build. The log is written to disk as configured and recent entries can also be viewed in the Manage / System Log section.
-
-## Continuous Delivery
-> Continuous Delivery (CD) is a DevOps practice that is used to deploy an application quickly while maintaining a high quality with an automated approach. It is about the way application package is deployed in the Web Server or in the Application Server in environment such as dev, test or staging. Deployment of an application can be done using shell script, batch file, or plugins available in Jenkins. Approach of automated deployment in case of Continuous Delivery and Continuous Deployment will be always same most of the time. In the case of Continuous Delivery, the application package is always production ready

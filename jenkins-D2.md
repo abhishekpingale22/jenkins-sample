@@ -1,5 +1,6 @@
 # Jenkins
 - [Jenkins](#jenkins)
+  - [Continuous Delivery](#continuous-delivery)
   - [Pre-requisites](#pre-requisites)
   - [Apache Tomcat on Amazon Linux:](#apache-tomcat-on-amazon-linux)
     - [Tomcat War file deployment Configs](#tomcat-war-file-deployment-configs)
@@ -7,7 +8,7 @@
       - [Jenkins Job to deploy war file](#jenkins-job-to-deploy-war-file)
       - [Artifacts Archive](#artifacts-archive)
   - [Jenkins Environment Variables:](#jenkins-environment-variables)
-  - [Jenkins Github Webhook - Check](#jenkins-github-webhook---check)
+  - [Jenkins Github Webhook-Check](#jenkins-github-webhook-check)
   - [Managing access control and authorization](#managing-access-control-and-authorization)
     - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
@@ -15,6 +16,9 @@
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
       - [Configuring Credentials in Jenkinsfile](#configuring-credentials-in-jenkinsfile)
         - [Notes](#notes)
+
+## Continuous Delivery
+> Continuous Delivery (CD) is a DevOps practice that is used to deploy an application quickly while maintaining a high quality with an automated approach. It is about the way application package is deployed in the Web Server or in the Application Server in environment such as dev, test or staging. Deployment of an application can be done using shell script, batch file, or plugins available in Jenkins. Approach of automated deployment in case of Continuous Delivery and Continuous Deployment will be always same most of the time. In the case of Continuous Delivery, the application package is always production ready
 
 ## Pre-requisites
 - Below steps assume that, you have a Jenkins Server Up and Running on one of the EC2 instance.
@@ -155,7 +159,7 @@ echo "BUILD_URL" ::$BUILD_URL
 echo "JOB_URL" :: $JOB_URL
 ```
 
-## Jenkins Github Webhook - Check
+## Jenkins Github Webhook-Check
 - Integrate jenkins with github so automatically CICD works when any commit is made to the repo
 Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` > Enter URL : `http://public-ip:8080/github-webhook/`
 - Lets add a webhook in Github to point to Jenkins URL
@@ -251,30 +255,27 @@ pipeline {
 - Since above `Jenkinsfile` contains a stage with docker agent, we need to install docker on the Jenkins Node.
 ```
 #install docker
-
 sudo yum install docker -y
 sudo systemctl start docker
 
 #add jenkins user to docker and wheel group
-
 sudo usermod -aG wheel jenkins
 sudo usermod -aG docker jenkins
 
 #Restart jenkins
 sudo systemctl restart jenkins
-
 ```
 - Click on **Build Now** to build the jenkinsfile project
 
 #### Configuring Credentials in Jenkinsfile
-- Navigate to Jenkins Home page > Credentials > System > Add Credentials.
+- Navigate to `Jenkins Home page > Credentials > System > Add Credentials`.
 - Select Scope as 'Global'
     **Global** - When credentials are to be added for a Pipeline project/item.
     **System** - When credentials are to be added for a Jenkins itself to interact with system administration functions., such as email authentication, agent connection, etc. This option applies the scope of the credential to a single object only.
 
-Types of credentials:
-**Secret text** - a token such as an API token (e.g. a GitHub personal access token)
-**Username and password** - which could be a colon separated string in the format username:password
+- Types of credentials:
+  - **Secret text** - a token such as an API token (e.g. a GitHub personal access token)
+  - **Username and password** - which could be a colon separated string in the format username:password
 
 > Audit Trail Plugin keeps a log of users who performed particular Jenkins operations, such as configuring jobs.
 This plugin adds an Audit Trail section in the main Jenkins configuration page.
