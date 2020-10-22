@@ -156,29 +156,24 @@ Colons can be used to align columns.
 - To Create a new task for Jenkins, click on `New Item` then enter an item name that is suitable for your project and select Freestyle project. Now click Ok.
 - Select the GitHub project checkbox and set the Project URL to point to your GitHub Repository.
 https://github.com/YourUserName/
-
 - Under Source Code Management tab, select Git and then set the Repository URL to point to your GitHub Repository.
-
 https://github.com/YourUserName/repo-name.git
-
 - Now Under Build Triggers tab, select the “Build when a change is pushed to GitHub” checkbox.
-
 - At the end, execute Shell script to take a clone from dev. When the configuration is done, click on save button.
-
 - Click OK and Build a Job and you will see that a war file is created and as soon as build is successfully triggered , same war file is copied by other project (Other project to build)
 
-Download the required Git version based on the operating system, or install automatically.
-
 ### Maven build phases
+- Maven itself requires Java installed on your machine.
+- You can verify if Maven is installed on your machine by running “mvn -v” in your command line/terminal. Maven is based on the `Project Object Model (POM)` configuration, which is stored in the XML file called the same – pom.xml. It is a structured format that describes the project, it’s dependencies, plugins, and goals.
 pom.xml file in your project directory
-> **Validate** : Validate Project is correct & all necessary information is available.
-**Compile** : Compile the Source Code
-**Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
-**package** : Take the compiled code and package it.
-**Install** : Install package in Local Repo, for use as a dependency in other project locally.
-**Deploy** : Copy the final package to the remote repository for sharing with other developers.
+- **Validate** : Validate Project is correct & all necessary information is available.
+- **Compile** : Compile the Source Code
+- **Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
+- **package** : Take the compiled code and package it.
+- **Install** : Install package in Local Repo, for use as a dependency in other project locally.
+- **Deploy** : Copy the final package to the remote repository for sharing with other developers.
 
-- The above are always are sequential, if you specify "install", all the phases before "install" are checked.
+- The above are always are sequential, if you specify `install`, all the phases before `install` are checked.
 ### Managing access control and authorization
 Managing access control and authorization
 - Go to Manage Jenkins > Configure Global Security > Enable security.
@@ -220,7 +215,7 @@ Credentials, Slave, Job, and so on > Click on Save.
 
 ### Audit Trail Plugin
 - Manage Jenkins > Manage Plugins > Install the `Audit Trail` Plugin.
-- Go to Manage Jenkins > Configure Systems > Audit Trail > Add Logger > Select Log 
+- Go to Manage Jenkins > Configure Systems > Audit Trail > Add Logger > Select Log
 - Provide the Log Location as `/var/log/jenkins/audit-%g.log`, provide Log File Size as `50` and Log File Count `10`.
 - After executing some build job for some Jenkins Project, check the content of the audit file as below.
 ```
