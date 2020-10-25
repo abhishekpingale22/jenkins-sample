@@ -4,18 +4,17 @@
   - [Pre-requisites](#pre-requisites)
   - [Apache Tomcat on Amazon Linux:](#apache-tomcat-on-amazon-linux)
     - [Tomcat War file deployment Configs](#tomcat-war-file-deployment-configs)
-      - [Plugin installation](#plugin-installation)
+      - [Jenkins Plugin installation](#jenkins-plugin-installation)
       - [Jenkins Job to deploy war file](#jenkins-job-to-deploy-war-file)
       - [Artifacts Archive](#artifacts-archive)
   - [Jenkins Environment Variables:](#jenkins-environment-variables)
-  - [Jenkins Github Webhook-Check](#jenkins-github-webhook-check)
+  - [Jenkins Github Webhook](#jenkins-github-webhook)
   - [Managing access control and authorization](#managing-access-control-and-authorization)
     - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
-    - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
     - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
+      - [Jenkins pipeline-syntax](#jenkins-pipeline-syntax)
       - [Configuring Credentials in Jenkinsfile](#configuring-credentials-in-jenkinsfile)
-        - [Notes](#notes)
 
 ## Continuous Delivery
 > Continuous Delivery (CD) is a DevOps practice that is used to deploy an application quickly while maintaining a high quality with an automated approach. It is about the way application package is deployed in the Web Server or in the Application Server in environment such as dev, test or staging. Deployment of an application can be done using shell script, batch file, or plugins available in Jenkins. Approach of automated deployment in case of Continuous Delivery and Continuous Deployment will be always same most of the time. In the case of Continuous Delivery, the application package is always production ready
@@ -27,7 +26,7 @@
 sudo hostnamectl set-hostname tomcat.example.com
 sudo yum install java-1.8.0 -y
 cd /opt/
-sudo wget http://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.35/bin/apache-tomcat-9.0.35.tar.gz
+sudo wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.35/bin/apache-tomcat-9.0.35.tar.gz
 sudo tar -zvxf apache-tomcat-9.0.35.tar.gz
 -----------------------------
 x –  Extract files
@@ -58,7 +57,7 @@ netstat -nltp | grep 8080
                connectionTimeout="20000"
                redirectPort="8443" />
 ```
-- If above changes are made, execute the command `tomcatup` and `tomcatdown`
+- If above changes are made, execute the command `tomcatdown` and `tomcatup`.
 
 - Create an empty repo and clone it, add project files into the local git folder and commit -> push the local repo to remote github repo using Git Bash.
 - Verify the files are available in your github repository
@@ -87,18 +86,8 @@ netstat -nltp | grep 8080
 ```
 - Restart the tomcat server using `tomcatdown` and `tomcatup`
 
-#### Plugin installation
+#### Jenkins Plugin installation
 - To install the Plugin `Deploy to container`  navigate to `Manage Jenkins` > `Manage Plugins`, search `Deploy to container` under `Available` tab.
-
-- Maven build phases
-    **Validate** : Validate Project is correct & all necessary information is available.
-    **Compile** : Compile the Source Code
-    **Test** : Test the Compiled Source Code using suitable unit Testing Framework (like JUnit)
-    **package** : Take the compiled code and package it.
-    **Install** : Install package in Local Repo, for use as a dependency in other project locally.
-    **Deploy** : Copy the final package to the remote repository for sharing with other developers.
-
-- The above are always are sequential, if you specify "install", all the phases before "install" are checked.
 
 #### Jenkins Job to deploy war file
 
@@ -112,12 +101,14 @@ netstat -nltp | grep 8080
 - Under `Post-build Actions`, from the `Add post-build action` dropdown button select the option `Deploy war/ear to a container`
 
 - Enter details of the War file that will be created as:
-  - For WAR/EAR files you can use wild cards, e.g. `**/*.war`.
-  - The context path is the context path part of the URL under which your application will be published in Tomcat. Select the appropriate Tomcat version from the Container dropdown box (note that you can also deploy to Glassfish or JBoss using this Jenkins plugin).
-  - Under the `Credentials` , `Add` username and password value that is entered in the `tomcat-users.xml` file.
+  - For `WAR/EAR files` you can use wild cards, e.g. `**/*.war`.
+  - The `context path` is the context path part of the URL under which your application will be published in Tomcat.
+  - Select the appropriate Tomcat version from the Container dropdown box (note that you can also deploy to Glassfish or JBoss using this Jenkins plugin).
+  - Under the `Credentials`, `Add` username and password value that is entered in the `tomcat-users.xml` file.
   - The Tomcat URL is the base URL through which your Tomcat instance can be reached (e.g http://172.31.67.85:8090)
-  >Make Sure network is open on specific port
+  >Make Sure network is open on specific port.
   - `Save` the changes and `Build Now`.
+  - Once Jenkins Job is build, if there is a Success for deploy, verify the deployment files on Tomcat Server under `webapps` path.
 
 #### Artifacts Archive
 - Go to `Jenkins dashboard` -> `Jenkins project or build job` -> `Post-build Actions` -> `Add post-build action` -> `Archive the artifacts`:
@@ -142,13 +133,11 @@ ls /var/lib/jenkins/workspace/<JOB_NAME>
 
 - Create a simple free style job to display the value of the environment variables that are set for a Jenkins Job:
 - Under Build Section > Add build step > Execute shell , add below commands:
-```bash
+``` bash
 echo "BUILD_NUMBER" :: $BUILD_NUMBER
 echo "BUILD_ID" :: $BUILD_ID
 echo "BUILD_DISPLAY_NAME" :: $BUILD_DISPLAY_NAME
 echo "JOB_NAME" :: $JOB_NAME
-echo "JOB_BASE_NAME" :: $JOB_BASE_NAME
-echo "BUILD_TAG" :: $BUILD_TAG
 echo "EXECUTOR_NUMBER" :: $EXECUTOR_NUMBER
 echo "NODE_NAME" :: $NODE_NAME
 echo "NODE_LABELS" :: $NODE_LABELS
@@ -157,9 +146,12 @@ echo "JENKINS_HOME" :: $JENKINS_HOME
 echo "JENKINS_URL" :: $JENKINS_URL
 echo "BUILD_URL" ::$BUILD_URL
 echo "JOB_URL" :: $JOB_URL
+echo "Below output is all the environment variable in Jenkins"
+printenv
 ```
+- The `printenv` command prints all the Jenkins Environment Variables set for that specific Build.
 
-## Jenkins Github Webhook-Check
+## Jenkins Github Webhook
 - Integrate jenkins with github so automatically CICD works when any commit is made to the repo
 Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` > Enter URL : `http://public-ip:8080/github-webhook/`
 - Lets add a webhook in Github to point to Jenkins URL
@@ -185,14 +177,7 @@ For authorization, we can define Matrix-based security on the Configure Global S
 - Lets configure some users in Jenkins, create a read only user
 Select Manage Jenkins > Manage Users > Create a user
 
-Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
-
-### Role-Based-Authorization Strategy
-- Add plugin from available tab in Plugins Manager
-- Select the Role Based Strategy
-- Manage Jenkins > Manage and Assign Roles > Assign read only roles to a user in jenkins
-- create a role with "manage Role" , select Read Permissions
-- Assign a role to another user
+- Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
 
 ### Audit Trail Plugin – an overview and usage
 - Manage Jenkins > Manage Plugins > Install the `Audit Trail` Plugin.
@@ -233,8 +218,16 @@ pipeline {
     }
 }
 ```
+#### Jenkins pipeline-syntax
+- Jenkins has a built-in **Snippet Generator** utility that is helpful for creating bits of code for individual steps, discovering new steps provided by plugins, or experimenting with different parameters for a particular step.
+- The Snippet Generator is dynamically populated with a list of the steps available to the Jenkins instance. The number of steps available is dependent on the plugins installed which explicitly expose steps for use in Pipeline.
+- To generate a **step snippet** with the **Snippet Generator**:
+  - Navigate to the Pipeline Syntax link from a configured Pipeline, or at `${YOUR_JENKINS_URL}/pipeline-syntax`.
+  - Select the desired step in the Sample Step dropdown menu
+  - Use the dynamically populated area below the Sample Step dropdown to configure the selected step.
+  - Click Generate Pipeline Script to create a snippet of Pipeline which can be copied and pasted into a Pipeline.
 
-- Add below content as Jenkinsfile and push in Github.
+- The code for a Jenkinsfile should be available in Github Repo
 
 - Click the Add Source button, select git choose the type of repository you want to use and fill in the details.
 
@@ -280,5 +273,3 @@ sudo systemctl restart jenkins
 > Audit Trail Plugin keeps a log of users who performed particular Jenkins operations, such as configuring jobs.
 This plugin adds an Audit Trail section in the main Jenkins configuration page.
 Here you can configure log location and settings (file size and number of rotating log files), and a URI pattern for requests to be logged. The default options select most actions with significant effect such as creating/configuring/deleting jobs and views or delete/save-forever/start a build. The log is written to disk as configured and recent entries can also be viewed in the Manage / System Log section.
-
-##### Notes
