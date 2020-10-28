@@ -9,12 +9,12 @@
       - [Artifacts Archive](#artifacts-archive)
   - [Jenkins Environment Variables:](#jenkins-environment-variables)
   - [Jenkins Github Webhook](#jenkins-github-webhook)
-  - [Managing access control and authorization](#managing-access-control-and-authorization)
-    - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
-    - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
       - [Jenkins pipeline-syntax](#jenkins-pipeline-syntax)
       - [Configuring Credentials in Jenkinsfile](#configuring-credentials-in-jenkinsfile)
+  - [Managing access control and authorization](#managing-access-control-and-authorization)
+    - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
+    - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
 
 ## Continuous Delivery
 > Continuous Delivery (CD) is a DevOps practice that is used to deploy an application quickly while maintaining a high quality with an automated approach. It is about the way application package is deployed in the Web Server or in the Application Server in environment such as dev, test or staging. Deployment of an application can be done using shell script, batch file, or plugins available in Jenkins. Approach of automated deployment in case of Continuous Delivery and Continuous Deployment will be always same most of the time. In the case of Continuous Delivery, the application package is always production ready
@@ -156,37 +156,10 @@ printenv
 Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` > Enter URL : `http://public-ip:8080/github-webhook/`
 - Lets add a webhook in Github to point to Jenkins URL
 - In `Github Repository > Go to Repository > Settings > Go to webhook and addnew webhook > Specify http://public-ip:8080/github-webhook/`
-- Go to Jenkins Project, Select the “Build when a change is pushed to GitHub” checkbox under Build Triggers tab > `Save`
+- Go to Jenkins Project, Select the `GitHub hook trigger for GITScm polling` checkbox under Build Triggers tab > `Save`
 - For Webhook to work, open port 8080 in security group.
 - Now if we make some changes to some file in Github, this Jenkins Project should be triggered.
-- Lets configure some users in Jenkins, create a read only user :
-`Select Manage Jenkins` > `Manage Users` > `Create a user`
-
-## Managing access control and authorization
-Managing access control and authorization
-- Go to `Manage Jenkins` > `Configure Global Security` > `Enable security`.
-
-- On the Jenkins dashboard, click on Manage Jenkins. Click on Manage Users.
-- We can edit user details on the same page. This is a subset of users, which also contains auto-created users.
-
-### Maintaining roles and project-based security
-For authorization, we can define Matrix-based security on the Configure Global Security page.
-1. Add group or user and configure security based on different sections such as Credentials, Slave, Job, and so on.
-2. Click on Save.
-
-- Lets configure some users in Jenkins, create a read only user
-Select Manage Jenkins > Manage Users > Create a user
-
-- Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
-
-### Audit Trail Plugin – an overview and usage
-- Manage Jenkins > Manage Plugins > Install the `Audit Trail` Plugin.
-- Go to Manage Jenkins > Configure Systems > Audit Trail > Add Logger > Select Log
-- Provide the Log Location as `/var/log/jenkins/audit-%g.log`, provide Log File Size as `50` and Log File Count `10`.
-- After executing some build job for some Jenkins Project, check the content of the audit file as below.
-```
-ls -ltr /var/log/jenkins/
-```
+- Jenkins receives a Github Payload similar to this [Github Push Webhook Event Payload](https://developer.github.com/webhooks/event-payloads/#push)
 
 ### Jenkins Build with Jenkinsfile
 - Navigate to Provide a name for your new item and select Pipeline
@@ -269,6 +242,32 @@ sudo systemctl restart jenkins
 - Types of credentials:
   - **Secret text** - a token such as an API token (e.g. a GitHub personal access token)
   - **Username and password** - which could be a colon separated string in the format username:password
+
+## Managing access control and authorization
+Managing access control and authorization
+- Go to `Manage Jenkins` > `Configure Global Security` > `Enable security`.
+
+- On the Jenkins dashboard, click on Manage Jenkins. Click on Manage Users.
+- We can edit user details on the same page. This is a subset of users, which also contains auto-created users.
+
+### Maintaining roles and project-based security
+For authorization, we can define Matrix-based security on the Configure Global Security page.
+1. Add group or user and configure security based on different sections such as Credentials, Slave, Job, and so on.
+2. Click on Save.
+
+- Lets configure some users in Jenkins, create a read only user
+Select Manage Jenkins > Manage Users > Create a user
+
+- Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
+
+### Audit Trail Plugin – an overview and usage
+- Manage Jenkins > Manage Plugins > Install the `Audit Trail` Plugin.
+- Go to Manage Jenkins > Configure Systems > Audit Trail > Add Logger > Select Log
+- Provide the Log Location as `/var/log/jenkins/audit-%g.log`, provide Log File Size as `50` and Log File Count `10`.
+- After executing some build job for some Jenkins Project, check the content of the audit file as below.
+```
+ls -ltr /var/log/jenkins/
+
 
 > Audit Trail Plugin keeps a log of users who performed particular Jenkins operations, such as configuring jobs.
 This plugin adds an Audit Trail section in the main Jenkins configuration page.

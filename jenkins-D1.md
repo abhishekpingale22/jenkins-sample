@@ -11,7 +11,6 @@
       - [Jenkins jobs and workpace information](#jenkins-jobs-and-workpace-information)
     - [Jenkins Maven Build Project](#jenkins-maven-build-project)
     - [Maven build phases](#maven-build-phases)
-    - [Managing access control and authorization](#managing-access-control-and-authorization)
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
 
 ### Jenkins Installation
@@ -170,12 +169,6 @@ pom.xml file in your project directory
 - **Deploy** : Copy the final package to the remote repository for sharing with other developers.
 
 - The above are always are sequential, if you specify `install`, all the phases before `install` are checked.
-### Managing access control and authorization
-Managing access control and authorization
-- Go to Manage Jenkins > Configure Global Security > Enable security.
-
-- On the Jenkins dashboard, click on Manage Jenkins. Click on Manage Users.
-- We can edit user details on the same page. This is a subset of users, which also contains auto-created users.
 
 ### Role-Based-Authorization Strategy
 - Add plugin from available tab in Plugins Manager.
