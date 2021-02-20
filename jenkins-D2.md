@@ -12,8 +12,6 @@
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
       - [Jenkins pipeline-syntax](#jenkins-pipeline-syntax)
       - [Configuring Credentials in Jenkinsfile](#configuring-credentials-in-jenkinsfile)
-  - [Managing access control and authorization](#managing-access-control-and-authorization)
-    - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
     - [Audit Trail Plugin – an overview and usage](#audit-trail-plugin--an-overview-and-usage)
 
 ## Continuous Delivery
@@ -242,23 +240,6 @@ sudo systemctl restart jenkins
 - Types of credentials:
   - **Secret text** - a token such as an API token (e.g. a GitHub personal access token)
   - **Username and password** - which could be a colon separated string in the format username:password
-
-## Managing access control and authorization
-Managing access control and authorization
-- Go to `Manage Jenkins` > `Configure Global Security` > `Enable security`.
-
-- On the Jenkins dashboard, click on Manage Jenkins. Click on Manage Users.
-- We can edit user details on the same page. This is a subset of users, which also contains auto-created users.
-
-### Maintaining roles and project-based security
-For authorization, we can define Matrix-based security on the Configure Global Security page.
-1. Add group or user and configure security based on different sections such as Credentials, Slave, Job, and so on.
-2. Click on Save.
-
-- Lets configure some users in Jenkins, create a read only user
-Select Manage Jenkins > Manage Users > Create a user
-
-- Try to access the Jenkins dashboard with a newly added user who has no rights, and we will find the authorization error.
 
 ### Audit Trail Plugin – an overview and usage
 - Manage Jenkins > Manage Plugins > Install the `Audit Trail` Plugin.
