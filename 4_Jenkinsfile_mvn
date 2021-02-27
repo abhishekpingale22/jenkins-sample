@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven-Default'
+        maven 'Maven_Local'
     }
     parameters {
         string(name: 'myParameter', defaultValue: 'myVal', description: 'Enter Parameter value?')
@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                deploy adapters: [tomcat9(credentialsId: 'c4589094-0216-4a29-b641-2ec596585b6e', path: '', url: 'http://54.242.146.81:8080')], contextPath: 'java-tomcat-sample', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: '068bd52e-409e-4ee4-bade-ac96d5a6e2d3', path: '', url: 'http://172.31.7.35:8080/')], contextPath: 'java-tomcat-jenkinsfile-sample', war: '**/*.war'
             }
         }
     }

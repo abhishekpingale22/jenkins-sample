@@ -103,10 +103,11 @@ netstat -nltp | grep 8080
   - The `context path` is the context path part of the URL under which your application will be published in Tomcat.
   - Select the appropriate Tomcat version from the Container dropdown box (note that you can also deploy to Glassfish or JBoss using this Jenkins plugin).
   - Under the `Credentials`, `Add` username and password value that is entered in the `tomcat-users.xml` file.
-  - The Tomcat URL is the base URL through which your Tomcat instance can be reached (e.g http://172.31.67.85:8090)
+  - The Tomcat URL is the base URL through which your Tomcat instance can be reached (e.g http://172.31.67.85:8080)
   >Make Sure network is open on specific port.
   - `Save` the changes and `Build Now`.
   - Once Jenkins Job is build, if there is a Success for deploy, verify the deployment files on Tomcat Server under `webapps` path.
+  - Make some changes in the code on the github configured branch in the Jenkins Job and build the Job again to verify the Artifact Deployment on Tomcat Path.
 
 #### Artifacts Archive
 - Go to `Jenkins dashboard` -> `Jenkins project or build job` -> `Post-build Actions` -> `Add post-build action` -> `Archive the artifacts`:
