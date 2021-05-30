@@ -7,7 +7,6 @@
       - [Jenkins Plugin installation](#jenkins-plugin-installation)
       - [Jenkins Job to deploy war file](#jenkins-job-to-deploy-war-file)
       - [Artifacts Archive](#artifacts-archive)
-  - [Jenkins Environment Variables:](#jenkins-environment-variables)
   - [Jenkins Github Webhook](#jenkins-github-webhook)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
       - [Jenkins pipeline-syntax](#jenkins-pipeline-syntax)
@@ -127,29 +126,6 @@ ls /var/lib/jenkins/workspace/<JOB_NAME>
 
 - Once build is successfull , lets add webhook to the github project.
 
-## Jenkins Environment Variables:
-- To view all the environment variables simply append `env-vars.html` to your Jenkins Server's URL.
-
-- Create a simple free style job to display the value of the environment variables that are set for a Jenkins Job:
-- Under Build Section > Add build step > Execute shell , add below commands:
-``` bash
-echo "BUILD_NUMBER" :: $BUILD_NUMBER
-echo "BUILD_ID" :: $BUILD_ID
-echo "BUILD_DISPLAY_NAME" :: $BUILD_DISPLAY_NAME
-echo "JOB_NAME" :: $JOB_NAME
-echo "EXECUTOR_NUMBER" :: $EXECUTOR_NUMBER
-echo "NODE_NAME" :: $NODE_NAME
-echo "NODE_LABELS" :: $NODE_LABELS
-echo "WORKSPACE" :: $WORKSPACE
-echo "JENKINS_HOME" :: $JENKINS_HOME
-echo "JENKINS_URL" :: $JENKINS_URL
-echo "BUILD_URL" ::$BUILD_URL
-echo "JOB_URL" :: $JOB_URL
-echo "Below output is all the environment variable in Jenkins"
-printenv
-```
-- The `printenv` command prints all the Jenkins Environment Variables set for that specific Build.
-
 ## Jenkins Github Webhook
 - Integrate jenkins with github so automatically CICD works when any commit is made to the repo
 Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` > Enter URL : `http://public-ip:8080/github-webhook/`
@@ -206,7 +182,7 @@ pipeline {
 - Click the Save button and watch your first Pipeline run!
 ```
 pipeline {
-    agent { docker { image 'python:3.5.1' } }
+    agent { docker { image 'python:3.8' } }
     stages {
         stage('build') {
             steps {
@@ -218,6 +194,7 @@ pipeline {
 }
 ```
 - Since above `Jenkinsfile` contains a stage with docker agent, we need to install docker on the Jenkins Node.
+- Also under Jenkins Plugins install : `Docker plugin` and `Docker Pipeline`.
 ```
 #install docker
 sudo yum install docker -y

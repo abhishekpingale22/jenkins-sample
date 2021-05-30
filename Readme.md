@@ -269,7 +269,7 @@ ls -ltr /var/log/jenkins/
 - Click the Save button and watch your first Pipeline run!
 ```
 pipeline {
-    agent { docker { image 'python:3.5.1' } }
+    agent { docker { image 'python:3.8' } }
     stages {
         stage('build') {
             steps {
