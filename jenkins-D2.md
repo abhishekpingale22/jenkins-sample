@@ -6,7 +6,6 @@
     - [Tomcat War file deployment Configs](#tomcat-war-file-deployment-configs)
       - [Jenkins Plugin installation](#jenkins-plugin-installation)
       - [Jenkins Job to deploy war file](#jenkins-job-to-deploy-war-file)
-      - [Artifacts Archive](#artifacts-archive)
   - [Jenkins Github Webhook](#jenkins-github-webhook)
     - [Jenkins Build with Jenkinsfile](#jenkins-build-with-jenkinsfile)
       - [Jenkins pipeline-syntax](#jenkins-pipeline-syntax)
@@ -15,7 +14,6 @@
 
 ## Continuous Delivery
 > Continuous Delivery (CD) is a DevOps practice that is used to deploy an application quickly while maintaining a high quality with an automated approach. It is about the way application package is deployed in the Web Server or in the Application Server in environment such as dev, test or staging. Deployment of an application can be done using shell script, batch file, or plugins available in Jenkins. Approach of automated deployment in case of Continuous Delivery and Continuous Deployment will be always same most of the time. In the case of Continuous Delivery, the application package is always production ready
-
 ## Pre-requisites
 - Below steps assume that, you have a Jenkins Server Up and Running on one of the EC2 instance.
 ## Apache Tomcat on Amazon Linux:
@@ -107,24 +105,6 @@ netstat -nltp | grep 8080
   - `Save` the changes and `Build Now`.
   - Once Jenkins Job is build, if there is a Success for deploy, verify the deployment files on Tomcat Server under `webapps` path.
   - Make some changes in the code on the github configured branch in the Jenkins Job and build the Job again to verify the Artifact Deployment on Tomcat Path.
-
-#### Artifacts Archive
-- Go to `Jenkins dashboard` -> `Jenkins project or build job` -> `Post-build Actions` -> `Add post-build action` -> `Archive the artifacts`:
-
-- Enter details for options in `Archive the artifacts` section:
-    - For `	Files to archive` enter the Path of the `.war` file like : `java-tomcat-sample/target/*.war`
-- `Save` the changes and `Build Now`.
-
-- Check the directories as below to validate above information:
-```
-ls /var/lib/jenkins/jobs
-ls /var/lib/jenkins/jobs/<JOB_NAME>
-ls /var/lib/jenkins/jobs/<JOB_NAME>/builds/<BUILD_NUMBER>
-ls /var/lib/jenkins/workspace/<JOB_NAME>
-```
-- If you check the directory structure, there will be archive directory present under the subsequent build number for which the job is executed with Post build action as `Archive the artifacts`
-
-- Once build is successfull , lets add webhook to the github project.
 
 ## Jenkins Github Webhook
 - Integrate jenkins with github so automatically CICD works when any commit is made to the repo

@@ -12,6 +12,7 @@
     - [Setup maven](#setup-maven)
   - [Jenkins with Maven Build](#jenkins-with-maven-build)
     - [Maven build phases](#maven-build-phases)
+      - [Artifacts Archive](#artifacts-archive)
   - [Managing access control and authorization](#managing-access-control-and-authorization)
     - [Maintaining roles and project-based security](#maintaining-roles-and-project-based-security)
     - [Role-Based-Authorization Strategy](#role-based-authorization-strategy)
@@ -175,11 +176,11 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 - Click on **New Item** then enter an item name, select **Freestyle project**.
 - Under Source Code Management tab, select Git and then set the Repository URL to point to your GitHub Repository.
 `https://github.com/YourUserName/repo-name.git`
-- Under Build Environment Build Step > Select `Invoke top-level Maven targets` from dropdown > select the Maven Version that we just created.
-- Select the Maven Version that you just created, specify `clean install` > `Save`
-- Now Under Build Triggers tab, select the `Build when a change is pushed to GitHub` checkbox.
-- At the end, execute Shell script to take a clone from dev. When the configuration is done, click on save button.
-- Click OK and Build a Job and you will see that a war file is created and as soon as build is successfully triggered.
+- Under Build Environment Build Step > Select `Invoke top-level Maven targets` from dropdown > select the Maven Version that we just created, specify `clean install`.
+- Under Advanced tab, specifiy the pom.xml file relative path location from git repository.
+- Click on `Save`
+> it will run command `mvn clean install -f pom.xml`
+- Click OK and Build a Job and you will see that a war file is created.
 
 ### Maven build phases
 - Maven itself requires Java installed on your machine.
@@ -195,6 +196,21 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
 - The above are always are sequential, if you specify `install`, all the phases before `install` are checked.
 
+#### Artifacts Archive
+- Go to `Jenkins dashboard` -> `Jenkins project or build job` -> `Post-build Actions` -> `Add post-build action` -> `Archive the artifacts`:
+
+- Enter details for options in `Archive the artifacts` section:
+    - For `	Files to archive` enter the Path of the `.war` file like : `java-tomcat-sample/target/*.war`
+- `Save` the changes and `Build Now`.
+
+- Check the directories as below to validate above information:
+```
+ls /var/lib/jenkins/jobs
+ls /var/lib/jenkins/jobs/<JOB_NAME>
+ls /var/lib/jenkins/jobs/<JOB_NAME>/builds/<BUILD_NUMBER>
+ls /var/lib/jenkins/workspace/<JOB_NAME>
+```
+- If you check the directory structure, there will be archive directory present under the subsequent build number for which the job is executed with Post build action as `Archive the artifacts`
 ## Managing access control and authorization
 - Managing access control and authorization
   - Go to `Manage Jenkins` > `Configure Global Security` > `Enable security`.
