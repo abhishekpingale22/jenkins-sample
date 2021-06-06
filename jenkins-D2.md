@@ -24,9 +24,9 @@ cd /opt/
 sudo wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.35/bin/apache-tomcat-9.0.35.tar.gz
 sudo tar -zvxf apache-tomcat-9.0.35.tar.gz
 -----------------------------
-x –  Extract files
-v – Verbose, print the file names as they are extracted one by one
 z – The file is a “gzipped” file
+v – Verbose, print the file names as they are extracted one by one
+x –  Extract files
 f – Use the following tar archive for the operation
 -----------------------------
 sudo ls -ltr /opt/apache-tomcat-9.0.35/bin
@@ -118,6 +118,7 @@ Go to `Jenkins` > `Manage Jenkins` > `Configure System` > `Add a Github Server` 
 
 ### Jenkins Build with Jenkinsfile
 - Navigate to Provide a name for your new item and select Pipeline
+- Enter below Pipeline code into the Script text area
 - **Jenkinsfile**
 ```
 pipeline {
