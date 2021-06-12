@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                DEPLOY_CONTEXT_PATH="${params.SDLC_ENV}-java-tomcat-pipeline-sample"
+                DEPLOY_CONTEXT_PATH='${params.SDLC_ENV}-java-tomcat-pipeline-sample'
                 deploy adapters: [tomcat9(credentialsId: '6a92f86b-d876-45d4-af54-4181d7df68d6', path: '', url: 'http://172.31.23.129:8080/')], contextPath: '${DEPLOY_CONTEXT_PATH}', war: '**/*.war'
             }
         }
