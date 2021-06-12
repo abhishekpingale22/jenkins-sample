@@ -4,7 +4,7 @@ pipeline {
         maven 'Maven_Local'
     }
     parameters {
-        string(name: 'myParameter', defaultValue: 'myVal', description: 'Enter Parameter value?')
+        string(name: 'myParameter', defaultValue: '', description: 'Enter Parameter value?')
     }
     stages {
         stage('Build') {
@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                deploy adapters: [tomcat9(credentialsId: '068bd52e-409e-4ee4-bade-ac96d5a6e2d3', path: '', url: 'http://172.31.7.35:8080/')], contextPath: 'java-tomcat-jenkinsfile-sample', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: '6a92f86b-d876-45d4-af54-4181d7df68d6', path: '', url: 'http://172.31.23.129:8080/')], contextPath: 'java-tomcat-jenkinsfile-sample', war: '**/*.war'
             }
         }
     }
